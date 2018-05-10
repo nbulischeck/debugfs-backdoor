@@ -1,7 +1,4 @@
-#include "net.h"
-#include "debugfs.h"
-
-#define BUFFSIZE 1024
+#include "request.h"
 
 unsigned char *buffer;
 unsigned long buffer_length;

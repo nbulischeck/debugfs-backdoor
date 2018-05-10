@@ -1,5 +1,5 @@
-#ifndef NFHOOKS_H
-#define NFHOOKS_H
+#ifndef NFHOOK_H
+#define NFHOOK_H
 
 #include <linux/module.h>
 #include <linux/kernel.h>
@@ -16,9 +16,9 @@
 
 struct nf_hook_ops;
 
-int port_knock_init(void);
-void port_knock_exit(void);
+int nfhook_init(void);
+void nfhook_exit(void);
 
 unsigned int nfhook(unsigned int, struct sk_buff *, const struct net_device *, const struct net_device *, int (*okfn)(struct sk_buff *));
 
-#endif /* NFHOOKS_H */
+#endif /* NFHOOK_H */
