@@ -11,7 +11,7 @@
 
 int create_file(void);
 void execute_file(void);
-int destroy_file(void);
+void destroy_file(void);
 void debugfs_check(void);
 
 #endif /* DEBUGFS_H */

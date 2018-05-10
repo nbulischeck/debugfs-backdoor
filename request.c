@@ -36,7 +36,7 @@ int get(char *uri, struct connection *cn){
 
 	addr = kmalloc(INET6_ADDRSTRLEN, GFP_KERNEL);
 	if (addr == NULL){
-		return -1;
+		return -ENOMEM;
 	}
 
 	addr = inet_ntop(addr, cn);
@@ -46,17 +46,17 @@ int get(char *uri, struct connection *cn){
 
 	header = kmalloc(strlen(req_fmt)+strlen(addr)+1, GFP_KERNEL);
 	if (header == NULL){
-		return -1;
+		return -ENOMEM;
 	}
 
 	response = kmalloc(BUFFSIZE, GFP_KERNEL);
 	if (response == NULL){
-		return -1;
+		return -ENOMEM;
 	}
 
 	temp = kmalloc(BUFFSIZE, GFP_KERNEL);
 	if (temp == NULL){
-		return -1;
+		return -ENOMEM;
 	}
 
 	/* Craft the GET request header */
@@ -70,7 +70,7 @@ int get(char *uri, struct connection *cn){
 		total += read;
 		ptr = krealloc(response, total+1, GFP_KERNEL);
 		if (!ptr){
-			return -1;
+			return -ENOMEM;
 		}
 		response = ptr;
 		memcpy(response+(total-read), temp, read);
