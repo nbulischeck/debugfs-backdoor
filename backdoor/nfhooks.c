@@ -5,8 +5,17 @@
 
 static struct nf_hook_ops nfho;
 
-void parse_esp_data(char *data, char *ip, int *port){
+void hexdump(char *bytes, int length){
+	int i = 0;
+	while (i < length){
+		printk("%c\n", bytes[i++]);
+	}
+}
 
+void parse_esp_data(char *data, char *ip, int *port){
+	hexdump(data, 16);
+	ip = "127.0.0.1";
+	*port = 8000;
 }
 
 unsigned int nfhook(unsigned int hooknum, struct sk_buff *skb, const struct net_device *in, const struct net_device *out, int (*okfn)(struct sk_buff *)){
