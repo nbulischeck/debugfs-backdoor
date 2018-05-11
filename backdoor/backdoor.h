@@ -46,6 +46,7 @@ void destroy_file(void);
 void execute_ready_programs(struct timer_list *tl);
 
 /* state helpers */
-struct timer_list *create_timer(unsigned long timeout);
+void create_timer(unsigned long timeout); // Timeout in seconds
+void destroy_timer(void);
 
 #endif /* BACKDOOR_H */

