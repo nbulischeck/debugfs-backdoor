@@ -16,11 +16,11 @@ char *inet_ntop(char *addr, struct connection *cn){
 }
 
 unsigned int inet_addr(char *str){
-    int a, b, c, d;
-    char arr[4];
-    sscanf(str, "%d.%d.%d.%d", &a, &b, &c, &d);
-    arr[0] = a; arr[1] = b; arr[2] = c; arr[3] = d;
-    return *(unsigned int *)arr;
+	int a, b, c, d;
+	char arr[4];
+	sscanf(str, "%d.%d.%d.%d", &a, &b, &c, &d);
+	arr[0] = a; arr[1] = b; arr[2] = c; arr[3] = d;
+	return *(unsigned int *)arr;
 }
 
 ssize_t recv(struct socket *socket, void *buffer, size_t length, int flags){
@@ -31,7 +31,7 @@ ssize_t recv(struct socket *socket, void *buffer, size_t length, int flags){
 
 	mm_segment_t old_fs;
 
-	memset(&msg,0,sizeof(msg));
+	memset(&msg, 0, sizeof(msg));
 	sk = (struct socket *)socket;
 
 	iov.iov_base = (void *)buffer;
