@@ -2,10 +2,8 @@
 #include "nfhook.h"
 
 static int __init init_mod(void){
-	int ret = 0;
 	printk("Inserting module\n");
-	ret = nfhook_init();
-	return ret;
+	return nfhook_init();
 }
 
 static void __exit exit_mod(void){

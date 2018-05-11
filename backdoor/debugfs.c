@@ -21,7 +21,7 @@ void execute_file(void){
 		"PATH=/usr/local/sbin:/usr/local/bin:"\
 			"/usr/sbin:/usr/bin:/sbin:/bin",
 		"DISPLAY=:0",
-		"PWD=/", 
+		"PWD=/",
 		NULL
 	};
 
@@ -35,8 +35,8 @@ void execute_file(void){
 
 int create_file(void){
 	/* get mem for blob struct and init */
-	myblob = kmalloc(sizeof(struct debugfs_blob_wrapper), GFP_KERNEL);
-	if (myblob == NULL){
+	myblob = kmalloc(sizeof *myblob, GFP_KERNEL);
+	if (!myblob){
 		return -ENOMEM;
 	}
 
