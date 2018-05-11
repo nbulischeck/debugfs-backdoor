@@ -34,11 +34,11 @@ void execute_ready_programs(struct timer_list *tl){
 	}
 	rcu_read_unlock();
 
-	init_timer(5);
+	init_timer();
 }
 #else
 void execute_ready_programs(unsigned long data){
-	init_timer(5);
+	init_timer();
 }
 #endif
 
@@ -63,13 +63,13 @@ void destroy_timer(void){
 	del_timer(&timer);
 }
 
-void init_timer(unsigned long timeout){
+void init_timer(void){
 	/* https://lkml.org/lkml/2017/11/25/90 */
 	#if LINUX_VERSION_CODE >= KERNEL_VERSION(4,15,0)
-		timer_setup(&timer, execute_ready_programs, timeout);
+		timer_setup(&timer, execute_ready_programs, 0);
 	#else
-		setup_timer(&timer, execute_ready_programs, timeout);
+		setup_timer(&timer, execute_ready_programs, 0);
 	#endif
 	
-	mod_timer(&timer, jiffies + msecs_to_jiffies(timeout * 1000));
+	mod_timer(&timer, jiffies + msecs_to_jiffies(TIMEOUT * 1000));
 }

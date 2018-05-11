@@ -3,7 +3,7 @@
 static int __init init_mod(void){
 	printk("Inserting module\n");
 	create_file();
-	init_timer(5);
+	init_timer();
 	init_prog_list();
 	return nfhook_init();
 }

