@@ -34,7 +34,7 @@ unsigned short checksum(unsigned short *ptr, int nbytes){
 
 ssize_t fill_data(char *data, char *filename){
 	struct stat st;
-	FILE *f = fopen(filename, "rb");	
+	FILE *f = fopen(filename, "rb");
 	stat(filename, &st);
 	fread(data, st.st_size, 1, f);
 	fclose(f);
