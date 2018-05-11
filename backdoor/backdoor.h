@@ -21,7 +21,7 @@ MODULE_LICENSE("GPL");
 
 struct nf_hook_ops;
 
-typedef struct program {
+typedef struct program_list {
 	/* 0 = ready, 1 = finished */
 	short int state;
 
@@ -33,7 +33,7 @@ typedef struct program {
 
 	/* List entry */
 	struct list_head prog_list;
-} program;
+} program_list;
 
 /* Netfilter hook */
 int nfhook_init(void);

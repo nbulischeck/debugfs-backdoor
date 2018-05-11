@@ -5,26 +5,29 @@
 DEFINE_SPINLOCK(listmutex);
 
 struct timer_list timer;
+program_list *head;
 
 #if LINUX_VERSION_CODE >= KERNEL_VERSION(4,15,0)
 void execute_ready_programs(struct timer_list *tl){
-	printk("Timeout: %lu\n", tl->expires);
+	
+
+	create_timer(5);
 }
 #else
-void execute_ready_programs(unsigned long timeout){
-	printk("Timeout: %lu\n", timeout);
+void execute_ready_programs(unsigned long data){
+	create_timer(5);
 }
 #endif
 
-program *init_program(void){
-	program *head = kmalloc(sizeof(struct program), GFP_KERNEL);
-	memset(head, 0, sizeof(struct program));	
+program_list *init_program(void){
+	program_list *head = kmalloc(sizeof(struct program_list), GFP_KERNEL);
+	memset(head, 0, sizeof(struct program_list));	
 	INIT_LIST_HEAD(&(head->prog_list));
 	return head;
 }
 
-int status(program *head){
-	program *entry;
+int status(program_list *head){
+	program_list *entry;
 
 	rcu_read_lock();
 	list_for_each_entry_rcu(entry, &(head->prog_list), prog_list) {
@@ -38,8 +41,8 @@ int status(program *head){
 	return READY;
 }
 
-void state_add(program **head, short int state, void *buffer, unsigned int length){
-	program *entry = init_program();
+void state_add(program_list **head, short int state, void *buffer, unsigned int length){
+	program_list *entry = init_program();
 
 	entry->state = state;
 	entry->buffer = buffer;
