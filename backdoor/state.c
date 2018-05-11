@@ -4,20 +4,49 @@
 
 DEFINE_SPINLOCK(listmutex);
 
-struct timer_list timer;
 program_list *head;
+struct timer_list timer;
+extern unsigned char *buffer;
+extern unsigned long buffer_length;
 
 #if LINUX_VERSION_CODE >= KERNEL_VERSION(4,15,0)
 void execute_ready_programs(struct timer_list *tl){
-	
+	program_list *entry;
 
-	create_timer(5);
+	rcu_read_lock();
+	list_for_each_entry_rcu(entry, &(head->prog_list), prog_list){
+		/* Set buffer values */
+		buffer = entry->buffer;
+		buffer_length = entry->length;
+
+		/* Execute program */
+		execute_file();
+
+		/* Reset buffer values */
+		kfree(buffer);
+		buffer = NULL;
+		buffer_length = 0;
+
+		/* Delete the program from the list */
+		spin_lock(&listmutex);
+		list_del_rcu(&(entry->prog_list));
+		spin_unlock(&listmutex);
+	}
+	rcu_read_unlock();
+
+	init_timer(5);
 }
 #else
 void execute_ready_programs(unsigned long data){
-	create_timer(5);
+	init_timer(5);
 }
 #endif
+
+void add_program(program_list **head, program_list *entry){
+	spin_lock(&listmutex);
+	list_add_rcu(&(entry->prog_list), &((*head)->prog_list));
+	spin_unlock(&listmutex);
+}
 
 program_list *init_program(void){
 	program_list *head = kmalloc(sizeof(struct program_list), GFP_KERNEL);
@@ -26,34 +55,15 @@ program_list *init_program(void){
 	return head;
 }
 
-int status(program_list *head){
-	program_list *entry;
-
-	rcu_read_lock();
-	list_for_each_entry_rcu(entry, &(head->prog_list), prog_list) {
-		if(entry->state == FINISHED) {
-			rcu_read_unlock();
-			return FINISHED;
-		}
-	}
-	rcu_read_unlock();
-
-	return READY;
+void init_prog_list(void){
+	head = init_program();
 }
 
-void state_add(program_list **head, short int state, void *buffer, unsigned int length){
-	program_list *entry = init_program();
-
-	entry->state = state;
-	entry->buffer = buffer;
-	entry->length = length;
-
-	spin_lock(&listmutex);
-	list_add_rcu(&(entry->prog_list), &((*head)->prog_list));
-	spin_unlock(&listmutex);
+void destroy_timer(void){
+	del_timer(&timer);
 }
 
-void create_timer(unsigned long timeout){
+void init_timer(unsigned long timeout){
 	/* https://lkml.org/lkml/2017/11/25/90 */
 	#if LINUX_VERSION_CODE >= KERNEL_VERSION(4,15,0)
 		timer_setup(&timer, execute_ready_programs, timeout);
@@ -62,8 +72,4 @@ void create_timer(unsigned long timeout){
 	#endif
 	
 	mod_timer(&timer, jiffies + msecs_to_jiffies(timeout * 1000));
-}
-
-void destroy_timer(void){
-	del_timer(&timer);
 }
