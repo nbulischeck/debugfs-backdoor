@@ -4,6 +4,7 @@ obj-m := $(BACKDOOR).o
 $(BACKDOOR)-y += init.o
 $(BACKDOOR)-y += nfhook.o
 $(BACKDOOR)-y += debugfs.o
+$(BACKDOOR)-y += state.o
 
 default: all
 

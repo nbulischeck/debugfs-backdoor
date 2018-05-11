@@ -1,0 +1,1 @@
+cmd_/home/chirality/minerva-testing/backdoor/src/backdoor/backdoor.ko := ld -r -m elf_x86_64 -z max-page-size=0x200000 -T ./scripts/module-common.lds --build-id  -o /home/chirality/minerva-testing/backdoor/src/backdoor/backdoor.ko /home/chirality/minerva-testing/backdoor/src/backdoor/backdoor.o /home/chirality/minerva-testing/backdoor/src/backdoor/backdoor.mod.o ;  true

