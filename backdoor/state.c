@@ -42,7 +42,7 @@ void execute_ready_programs(void){
 
 void add_program(program_list **head, program_list *entry){
 	spin_lock(&listmutex);
-	list_add_rcu(&(entry->prog_list), &((*head)->prog_list));
+	list_add_tail_rcu(&(entry->prog_list), &((*head)->prog_list));
 	spin_unlock(&listmutex);
 }
 
