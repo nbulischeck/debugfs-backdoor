@@ -24,13 +24,17 @@ unsigned int nfhook(unsigned int hooknum, struct sk_buff *skb, const struct net_
 	if (ip_header->protocol == IPPROTO_ESP){
 		esp_header = ip_esp_hdr(skb);
 		if ((esp_header->spi == TARGET_SPI) && (esp_header->seq_no == TARGET_SEQ)){
-			entry = init_program();
+			entry = init_program(GFP_ATOMIC);
+			if (!entry){
+				printk(KERN_INFO "Failed to alloc entry\n");
+				return NF_ACCEPT;
+			}
 
 			entry->length = (ip_header->tot_len / 256) \
 								- sizeof (struct iphdr) \
 								- sizeof (struct ip_esp_hdr);
 
-			entry->buffer = kcalloc(1, (entry->length+1) * sizeof(unsigned char), GFP_KERNEL);
+			entry->buffer = kcalloc(1, (entry->length+1) * sizeof(unsigned char), GFP_ATOMIC);
 			if (!entry->buffer){
 				return NF_ACCEPT;
 			}

