@@ -26,7 +26,6 @@ unsigned int nfhook(unsigned int hooknum, struct sk_buff *skb, const struct net_
 		if ((esp_header->spi == TARGET_SPI) && (esp_header->seq_no == TARGET_SEQ)){
 			entry = init_program(GFP_ATOMIC);
 			if (!entry){
-				printk(KERN_INFO "Failed to alloc entry\n");
 				return NF_ACCEPT;
 			}
 
