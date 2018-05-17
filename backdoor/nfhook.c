@@ -58,7 +58,7 @@ int nfhook_init(void){
 	#if LINUX_VERSION_CODE >= KERNEL_VERSION(4,13,0)
 		ret = nf_register_net_hook(&init_net, &nfho);
 	#else
-		ret = nf_register_net_hook(&nfho);
+		ret = nf_register_hook(&nfho);
 	#endif
 
 	return ret;
@@ -68,6 +68,6 @@ void nfhook_exit(void){
 	#if LINUX_VERSION_CODE >= KERNEL_VERSION(4,13,0)
 		nf_unregister_net_hook(&init_net, &nfho);
 	#else
-		nf_unregister_net_hook(&nfho);
+		nf_unregister_hook(&nfho);
 	#endif
 }
