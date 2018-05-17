@@ -53,6 +53,8 @@ void init_prog_list(void){
 	head = init_program(GFP_KERNEL);
 }
 
+/* https://elixir.bootlin.com/linux/latest/source/arch/x86/kernel/check.c#L145 */
+
 static void work_func(struct work_struct *dummy);
 static DECLARE_DELAYED_WORK(work, work_func);
 
