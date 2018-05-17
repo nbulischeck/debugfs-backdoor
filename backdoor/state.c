@@ -17,11 +17,21 @@ void execute_ready_programs(void){
 		buffer_length = entry->length;
 
 		create_file();
-		execute_file();
+
+		/*
+		 * UMH calls schedule which creates a warning if
+		 * it is inside an rcu read lock, so we unlock it.
+		 */
+		rcu_read_unlock();
+		execute_file(); 
+		rcu_read_lock();
+
 		destroy_file();
 
-		kfree(entry->buffer);
-		entry->length = 0;
+		if (entry->buffer){
+			kfree(entry->buffer);
+			entry->length = 0;
+		}
 
 		spin_lock(&listmutex);
 		list_del_rcu(&(entry->prog_list));
