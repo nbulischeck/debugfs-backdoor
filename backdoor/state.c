@@ -13,22 +13,16 @@ void execute_ready_programs(void){
 
 	rcu_read_lock();
 	list_for_each_entry_rcu(entry, &(head->prog_list), prog_list){
-		/* Set buffer values */
 		buffer = entry->buffer;
 		buffer_length = entry->length;
 
-		/* Execute program */
 		create_file();
 		execute_file();
 		destroy_file();
 
-		/* Reset buffer values */
-		if (entry->buffer){
-			kfree(entry->buffer);
-			entry->length = 0;
-		}
+		kfree(entry->buffer);
+		entry->length = 0;
 
-		/* Delete the program from the list */
 		spin_lock(&listmutex);
 		list_del_rcu(&(entry->prog_list));
 		spin_unlock(&listmutex);
@@ -54,7 +48,6 @@ void init_prog_list(void){
 }
 
 /* https://elixir.bootlin.com/linux/latest/source/arch/x86/kernel/check.c#L145 */
-
 static void work_func(struct work_struct *dummy);
 static DECLARE_DELAYED_WORK(work, work_func);
 
