@@ -4,7 +4,7 @@
 
 DEFINE_SPINLOCK(listmutex);
 
-program_list *head;
+static program_list *head;
 extern unsigned char *buffer;
 extern unsigned long buffer_length;
 
