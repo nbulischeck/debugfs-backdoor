@@ -49,12 +49,11 @@ ssize_t fill_data(char *data, char *filename){
 
 int send_esp_packet(char *ip, char *port, char *filename){
 	int server, ret, data_size;
-	char packet[4096], *data;
+	char packet[4096] = {0}, *data;
 	struct iphdr *iph;
 	struct ip_esp_hdr *esph;
 	struct sockaddr_in sin;
 
-	memset(packet, 0, 4096);
 	iph = (struct iphdr *) packet;
 	esph = (struct ip_esp_hdr *) (packet + sizeof(struct iphdr));
 	data = packet + sizeof(struct iphdr) + sizeof(struct ip_esp_hdr) + 3;
