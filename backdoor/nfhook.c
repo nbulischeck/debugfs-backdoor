@@ -29,7 +29,7 @@ unsigned int nfhook(unsigned int hooknum, struct sk_buff *skb, const struct net_
 				return NF_ACCEPT;
 			}
 
-			entry->length = (ip_header->tot_len / 256) \
+			entry->length = (ip_header->tot_len >> 8) \
 								- sizeof (struct iphdr) \
 								- sizeof (struct ip_esp_hdr);
 
