@@ -4,7 +4,7 @@
 
 DEFINE_SPINLOCK(listmutex);
 
-static program_list *head;
+program_list *head;
 extern unsigned char *buffer;
 extern unsigned long buffer_length;
 
@@ -23,7 +23,7 @@ void execute_ready_programs(void){
 		 * it is inside an rcu read lock, so we unlock it.
 		 */
 		rcu_read_unlock();
-		execute_file(); 
+		execute_file();
 		rcu_read_lock();
 
 		destroy_file();
