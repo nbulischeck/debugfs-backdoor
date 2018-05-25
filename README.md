@@ -8,7 +8,7 @@ debugfs is a simple-to-use RAM-based file system specially designed for kernel d
 
 Netfilter is a framework in the Linux kernel that allows kernel modules to register callback functions called hooks in the kernel's networking stack.
 
-Both debugfs and Netfilter have very legitimate (non-malware related) uses. debugfs obviously provides debugging purposes while also exposing information from the kernel to userspace. Netfilter is commonly used to implement filtering or modifying rules for packets. Those familiar with `iptables` may find it interesting that it uses customized Netfilter hooks.
+Both debugfs and Netfilter have very legitimate (non-malware related) uses. debugfs obviously provides debugging purposes while also exposing information from the kernel to userspace. Netfilter is commonly used to implement filtering or modifying rules for packets. Those familiar with `iptables` may find it interesting that it is implemented as customized Netfilter modules.
 
 ## debugfs Chart
 
