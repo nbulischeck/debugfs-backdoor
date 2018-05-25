@@ -1,8 +1,14 @@
 # Misusing debugfs for In-Memory RCE
 
+This repo contains code that demonstrates a method of code execution using debugfs and netfilter in a loadable kernel module.
+
 ## Overview
 
 debugfs is a simple-to-use RAM-based file system specially designed for kernel debugging purposes. It was released with version 2.6.10-rc3 and written by Greg Kroah-Hartman.
+
+Netfilter is a framework in the Linux kernel that allows kernel modules to register callback functions called hooks in the kernel's networking stack.
+
+Both debugfs and Netfilter have very legitimate (non-malware related) uses. debugfs obviously provides debugging purposes while also exposing information from the kernel to userspace. Netfilter is commonly used to implement filtering or modifying rules for packets. Those familiar with `iptables` may find it interesting that it uses customized Netfilter hooks.
 
 ## debugfs Chart
 
